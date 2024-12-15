@@ -263,14 +263,31 @@ class CollectionController extends Controller
     }
 
 
+    // public function fetchRootId() {
+    //     $root = Collection::whereNull('parent_id')->first();
+    //     $rootId = $root -> id;
+    //     if (!$rootId) {
+    //         return response()->json(['message' => 'Root Collection not found'],404);
+    //     }
+    //     // return response()->json($rootId);
+    //     return response()->json($root->id);
+    // }
+
+
     public function fetchRootId() {
         $root = Collection::whereNull('parent_id')->first();
-        $rootId = $root -> id;
-        if (!$rootId) {
-            return response()->json(['message' => 'Root Collection not found'],404);
+    
+        if (!$root) {
+            // Automatically create a root collection if none exists
+            $root = Collection::create([
+                'name' => 'Root Collection',
+                'description' => 'This is the root collection.',
+                'parent_id' => null,
+                'user_id' => auth()->id() ?? 1, // Use authenticated user ID or a default one
+            ]);
         }
-        // return response()->json($rootId);
+    
         return response()->json($root->id);
     }
- 
+    
 }
