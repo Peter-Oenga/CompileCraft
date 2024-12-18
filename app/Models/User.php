@@ -2,17 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Role;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;  // Add Spatie HasRoles trait
 use App\Notifications\ResetPasswordNotification;
 
 class User extends Authenticatable
 {
-    use HasApiTokens,HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;  // Include HasRoles trait
 
     /**
      * The attributes that are mass assignable.
@@ -52,15 +51,27 @@ class User extends Authenticatable
         ];
     }
 
-    public function roles()
+    /**
+     * Override the default notification for password reset
+     */
+    public function sendPasswordResetNotification($token)
     {
-        return $this->belongsToMany(Role::class, 'role_user');
+        $this->notify(new ResetPasswordNotification($token));
     }
 
+    /**
+     * Check if the user has a specific permission for an action on an entity.
+     * 
+     * @param string $action
+     * @param string $entity
+     * @return bool
+     */
     public function hasPermission($action, $entity)
     {
+        // This custom function checks if the user has a certain permission
         foreach ($this->roles as $role) {
             foreach ($role->permissions as $permission) {
+                // Check if the role has the permission based on action and entity
                 if ($permission->action->name === $action && $permission->entity->name === $entity) {
                     return true;
                 }
@@ -68,11 +79,4 @@ class User extends Authenticatable
         }
         return false;
     }
-
-    // Override the default notification
-    public function sendPasswordResetNotification($token)
-    {
-        $this->notify(new ResetPasswordNotification($token));
-    }
-
 }
