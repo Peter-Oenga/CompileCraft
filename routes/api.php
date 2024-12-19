@@ -8,6 +8,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ActionController;
 use App\Http\Controllers\EntityController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AudienceController;
@@ -67,6 +68,18 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/documents/{document}', [DocumentController::class, 'show']);
     Route::post('/documents/{document}/update', [DocumentController::class, 'update']); // Replacing PUT with POST
     Route::post('/documents/{document}/delete', [DocumentController::class, 'destroy']); // Replacing DELETE with POST
+});
+
+// REPORT MANAGEMENT
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    // Additional custom routes
+    Route::get('reports', [ReportController::class, 'index']);
+    Route::get('reports/{report}', [ReportController::class, 'show']);
+    Route::post('reports', [ReportController::class, 'store']);
+    Route::post('reports/{report}/update', [ReportController::class, 'update']);
+    Route::post('reports/{report}/delete', [ReportController::class, 'destroy']);
+    Route::post('reports/{report}/upload', [ReportController::class, 'uploadReport']);
+    Route::post('reports/{report}/download', [ReportController::class, 'downloadReport']);
 });
 
 // EVENT MANAGEMENT
