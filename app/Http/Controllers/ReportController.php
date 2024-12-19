@@ -36,8 +36,8 @@ class ReportController extends Controller
             'municipality' => $request->input('municipality'),
             'participants' => $request->input('participants'),
             'workshops' => $request->input('workshops'),
-            'challenges' => $request->input('challenges'),
-            'recommendations' => $request->input('recommendations'),
+            // 'challenges' => $request->input('challenges') ? explode(',', $request->input('challenges')) : null,
+            // 'recommendations' => $request->input('recommendations') ? explode(',', $request->input('recommendations')) : null,
         ]);
 
         return response()->json($report, 201);
@@ -51,6 +51,22 @@ class ReportController extends Controller
         $report = Report::with('document')->findOrFail($id);
         return response()->json($report);
     }
+
+    /**
+     * Fetch report data linked to a specific document
+     */
+
+    public function getReportsByDocumentId($documentId)
+    {
+        // Fetch all reports linked to the given document ID
+        $reports = Report::where('document_id', $documentId)->get();
+
+        // Return the reports as a JSON response
+        return response()->json($reports, 200);
+    }
+
+
+
 
     /**
      * Update the specified resource in storage.
