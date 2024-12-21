@@ -8,6 +8,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ActionController;
 use App\Http\Controllers\EntityController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AudienceController;
@@ -25,11 +26,11 @@ Route::prefix('users')->group(function () {
     Route::post('/request-password-reset', [AuthController::class, 'requestPasswordReset']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
     Route::get('/profile', [AuthController::class, 'getAuthenticatedUser'])->middleware('auth:sanctum');
-    
+
     //Specific user by ID
     Route::get('/{user}', [AuthController::class, 'show'])->middleware('auth:sanctum');
     //Update User
-    Route::post('/{user}/update',[AuthController::class,'update'])->middleware('auth:sanctum');
+    Route::post('/{user}/update', [AuthController::class, 'update'])->middleware('auth:sanctum');
     //Logout User
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 });
@@ -40,12 +41,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('collections/root', [CollectionController::class, 'getRoot']);
     Route::get('collections/{id}/children', [CollectionController::class, 'getChildren']);
     Route::post('collections/{id}/move', [CollectionController::class, 'moveCollection']);
-    Route::get('collections/rootId',[CollectionController::class,'fetchRootId']);
-    
+    Route::get('collections/rootId', [CollectionController::class, 'fetchRootId']);
+
     // Explicitly declare resourceful routes with route model binding
     Route::get('/collections', [CollectionController::class, 'index']);
     Route::post('/collections', [CollectionController::class, 'store']);
-    
+
 
     Route::get('/collections/{collection}', [CollectionController::class, 'show']);
     Route::post('/collections/{collection}/update', [CollectionController::class, 'update']); // Replacing PUT with POST
@@ -53,7 +54,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 // DOCUMENT AND VERSIONS MANAGEMENT
-Route::group(['middleware' => ['auth:sanctum']], function () {  
+Route::group(['middleware' => ['auth:sanctum']], function () {
     // Additional custom routes with route model binding
     Route::get('/documents/{document}/download', [DocumentController::class, 'downloadDocument']);
     Route::post('/documents/{document}/move', [DocumentController::class, 'moveDocument']);
@@ -69,11 +70,28 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/documents/{document}/delete', [DocumentController::class, 'destroy']); // Replacing DELETE with POST
 });
 
+// REPORT MANAGEMENT
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    // Additional custom routes
+    Route::get('reports', [ReportController::class, 'index']);
+    Route::get('reports/{report}', [ReportController::class, 'show']);
+    Route::post('reports', [ReportController::class, 'store']);
+    Route::post('reports/{report}/update', [ReportController::class, 'update']);
+    Route::post('reports/{report}/delete', [ReportController::class, 'destroy']);
+    Route::post('reports/{report}/upload', [ReportController::class, 'uploadReport']);
+    Route::post('reports/{report}/download', [ReportController::class, 'downloadReport']);
+
+    // Fetch reports for a specific document
+    Route::get('/reports/by-document/{document}', [ReportController::class, 'getReportsByDocumentId']);
+});
+
+
+
 // EVENT MANAGEMENT
-Route::middleware('auth:sanctum')->group(function () { 
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('events/upcoming', [EventController::class, 'getUpcomingEvents']);
     Route::get('events/past', [EventController::class, 'getPastEvents']);
-    
+
     // Explicitly declare resourceful routes with route model binding
     Route::get('/events', [EventController::class, 'index']);
     Route::post('/events', [EventController::class, 'store']);
@@ -93,7 +111,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{outcome}/delete', [EventOutcomeController::class, 'destroy']); // Replacing DELETE with POST
 
         // File Management for Event Outcomes 
-        Route::post('/{outcome}/files',[EventOutcomeController::class,'addFile']);
+        Route::post('/{outcome}/files', [EventOutcomeController::class, 'addFile']);
         Route::post('/{outcome}/files/{file}/delete', [EventOutcomeController::class, 'removeFile']); // Replacing DELETE with POST
 
         // Image Management for Event Outcomes
@@ -132,8 +150,8 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('actions',[ActionController::class,'index']);
-    Route::get('entities',[EntityController::class,'index']);
+    Route::get('actions', [ActionController::class, 'index']);
+    Route::get('entities', [EntityController::class, 'index']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -178,5 +196,3 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/achievements/{achievement}/delete', [AchievementController::class, 'destroy'])->name('achievements.destroy');
     });
 });
-
-

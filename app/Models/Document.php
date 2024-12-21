@@ -100,4 +100,10 @@ class Document extends Model
             // Do not update user_id; preserve the original ownership
         ]);
     }
+
+    // Relationship with the Report model
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
+    }
 }
