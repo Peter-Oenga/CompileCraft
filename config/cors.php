@@ -19,7 +19,16 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env("FRONTEND_URL")],
+    // 'allowed_origins' => [env("FRONTEND_URL")],
+    // 'allowed_origins' => ['http://192.168.43.206:8080', 'http://localhost:8080', 'https://811b-2c0f-fe38-2333-5aa1-f812-ad28-21bc-3a13.ngrok-free.app'],
+
+
+    'allowed_origins' => [
+    env("FRONTEND_URL"),
+    'https://192.168.43.206:8080',
+    'https://localhost:8080',
+    'https://b855-2c0f-fe38-2333-5aa1-f812-ad28-21bc-3a13.ngrok-free.app',
+    ],
 
     'allowed_origins_patterns' => [],
 
